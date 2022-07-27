@@ -9,4 +9,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @EntityGraph(attributePaths = {"coupon"}, type = EntityGraphType.LOAD)
     Optional<Reservation> findWithCouponById(Long reservationId);
+
+    @EntityGraph(attributePaths = {"coupon"}, type = EntityGraphType.LOAD)
+    Optional<Reservation> findTopByCoupon_IdAndReservationStatus(Long couponId, ReservationStatus status);
 }

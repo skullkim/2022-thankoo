@@ -9,6 +9,7 @@ import static com.woowacourse.thankoo.acceptance.support.fixtures.ReservationReq
 import static com.woowacourse.thankoo.acceptance.support.fixtures.ReservationRequestFixture.보낸_예약을_조회한다;
 import static com.woowacourse.thankoo.acceptance.support.fixtures.ReservationRequestFixture.에약을_요청한다;
 import static com.woowacourse.thankoo.acceptance.support.fixtures.ReservationRequestFixture.예약을_승인한다;
+import static com.woowacourse.thankoo.acceptance.support.fixtures.ReservationRequestFixture.쿠폰_예약_정보를_조회한다;
 import static com.woowacourse.thankoo.common.fixtures.CouponFixture.MESSAGE;
 import static com.woowacourse.thankoo.common.fixtures.CouponFixture.NOT_USED;
 import static com.woowacourse.thankoo.common.fixtures.CouponFixture.TITLE;
@@ -105,6 +106,27 @@ class ReservationAcceptanceTest extends AcceptanceTest {
         예약이_조회됨(response);
     }
 
+    @DisplayName("회원이 보낸 쿠폰으로 받은 예약을 조회한다.")
+    @Test
+    void getReservationByCoupon() {
+        TokenResponse senderToken = 토큰을_반환한다(로그인_한다(CODE_SKRR));
+        TokenResponse receiverToken = 토큰을_반환한다(로그인_한다(CODE_HOHO));
+
+        CouponRequest couponRequest = createCouponRequest(List.of(receiverToken.getMemberId()), TYPE, TITLE, MESSAGE);
+        쿠폰을_전송한다(senderToken.getAccessToken(), couponRequest);
+
+        CouponResponse couponResponse = 받은_쿠폰을_조회한다(receiverToken.getAccessToken(), NOT_USED).jsonPath()
+                .getList(".", CouponResponse.class).get(0);
+
+        에약을_요청한다(receiverToken.getAccessToken(),
+                new ReservationRequest(couponResponse.getCouponId(), LocalDateTime.now().plusDays(1L)));
+
+        ExtractableResponse<Response> response = 쿠폰_예약_정보를_조회한다(couponResponse.getCouponId(),
+                receiverToken.getAccessToken());
+
+        단건_예약이_조회됨(response);
+    }
+
     @DisplayName("요청된 예약을 승인한다.")
     @Test
     void updateStatusAccept() {
@@ -132,5 +154,12 @@ class ReservationAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(reservationResponses).isNotEmpty();
+    }
+
+    private void 단건_예약이_조회됨(final ExtractableResponse<Response> response) {
+        ReservationResponse reservationResponse = response.as(ReservationResponse.class);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(reservationResponse).isNotNull();
     }
 }

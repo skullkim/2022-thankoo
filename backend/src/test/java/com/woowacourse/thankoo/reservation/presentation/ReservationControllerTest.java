@@ -86,10 +86,10 @@ class ReservationControllerTest extends ControllerTest {
         resultActions.andDo(document("reservations/get-received-reservations",
                 getResponsePreprocessor(),
                 responseFields(
-                        fieldWithPath("[].reservationId").type(NUMBER).description("reservationId"),
+                        fieldWithPath("[].reservation.id").type(NUMBER).description("reservationId"),
+                        fieldWithPath("[].reservation.meetingTime").type(STRING).description("meetingTime"),
                         fieldWithPath("[].memberName").type(STRING).description("memberName"),
-                        fieldWithPath("[].couponType").type(STRING).description("couponType"),
-                        fieldWithPath("[].meetingTime").type(STRING).description("meetingTime")
+                        fieldWithPath("[].couponType").type(STRING).description("couponType")
                 )
         ));
     }
@@ -116,10 +116,10 @@ class ReservationControllerTest extends ControllerTest {
         resultActions.andDo(document("reservations/get-sent-reservations",
                 getResponsePreprocessor(),
                 responseFields(
-                        fieldWithPath("[].reservationId").type(NUMBER).description("reservationId"),
+                        fieldWithPath("[].reservation.id").type(NUMBER).description("reservationId"),
+                        fieldWithPath("[].reservation.meetingTime").type(STRING).description("meetingTime"),
                         fieldWithPath("[].memberName").type(STRING).description("memberName"),
-                        fieldWithPath("[].couponType").type(STRING).description("couponType"),
-                        fieldWithPath("[].meetingTime").type(STRING).description("meetingTime")
+                        fieldWithPath("[].couponType").type(STRING).description("couponType")
                 )
         ));
     }

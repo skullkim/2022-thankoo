@@ -27,4 +27,8 @@ public class ReservationRequestFixture {
     public static ExtractableResponse<Response> 예약을_승인한다(final String reservationId, final String token) {
         return putWithToken("/api/reservations/" + reservationId, token, new ReservationStatusRequest("accept"));
     }
+
+    public static ExtractableResponse<Response> 쿠폰_예약_정보를_조회한다(final Long couponId, final String token) {
+        return getWithToken("api/coupons/" + couponId + "/reservations", token);
+    }
 }
