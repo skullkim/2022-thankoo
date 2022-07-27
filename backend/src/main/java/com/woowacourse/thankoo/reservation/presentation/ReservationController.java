@@ -5,6 +5,7 @@ import com.woowacourse.thankoo.reservation.application.ReservationQueryService;
 import com.woowacourse.thankoo.reservation.application.ReservationService;
 import com.woowacourse.thankoo.reservation.application.dto.ReservationRequest;
 import com.woowacourse.thankoo.reservation.application.dto.ReservationStatusRequest;
+import com.woowacourse.thankoo.reservation.presentation.dto.ReservationInformationResponse;
 import com.woowacourse.thankoo.reservation.presentation.dto.ReservationResponse;
 import java.net.URI;
 import java.util.List;
@@ -19,36 +20,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/reservations")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class ReservationController {
 
     private final ReservationService reservationService;
     private final ReservationQueryService reservationQueryService;
 
-    @PostMapping
+    @PostMapping("/reservations")
     public ResponseEntity<Void> reserve(@AuthenticationPrincipal final Long memberId,
                                         @RequestBody final ReservationRequest reservationRequest) {
         Long reserveId = reservationService.save(memberId, reservationRequest);
         return ResponseEntity.created(URI.create("/api/reservations/" + reserveId)).build();
     }
 
-    @GetMapping("/received")
+    @GetMapping("/reservations/received")
     public ResponseEntity<List<ReservationResponse>> getReceivedReservations(
             @AuthenticationPrincipal final Long memberId) {
         return ResponseEntity.ok(reservationQueryService.getReceivedReservations(memberId));
     }
 
-    @GetMapping("/sent")
+    @GetMapping("/reservations/sent")
     public ResponseEntity<List<ReservationResponse>> getSentReservations(@AuthenticationPrincipal final Long memberId) {
         return ResponseEntity.ok(reservationQueryService.getSentReservations(memberId));
     }
 
-    @PutMapping("/{reservationId}")
+    @PutMapping("/reservations/{reservationId}")
     public ResponseEntity<Void> updateStatus(@AuthenticationPrincipal final Long memberId,
                                              @PathVariable final Long reservationId,
                                              @RequestBody final ReservationStatusRequest reservationStatusRequest) {
         reservationService.updateStatus(memberId, reservationId, reservationStatusRequest);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/coupons/{couponId}/reservations")
+    public ResponseEntity<ReservationInformationResponse> getByCouponId(@AuthenticationPrincipal final Long memberId,
+                                                                        @PathVariable final Long couponId) {
+        return ResponseEntity.ok(reservationQueryService.getByCouponId(memberId, couponId));
     }
 }

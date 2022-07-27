@@ -27,6 +27,7 @@ import com.woowacourse.thankoo.common.ControllerTest;
 import com.woowacourse.thankoo.reservation.application.dto.ReservationRequest;
 import com.woowacourse.thankoo.reservation.application.dto.ReservationStatusRequest;
 import com.woowacourse.thankoo.reservation.domain.ReservationCoupon;
+import com.woowacourse.thankoo.reservation.presentation.dto.ReservationInformationResponse;
 import com.woowacourse.thankoo.reservation.presentation.dto.ReservationResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -120,6 +121,30 @@ class ReservationControllerTest extends ControllerTest {
                         fieldWithPath("[].reservation.meetingTime").type(STRING).description("meetingTime"),
                         fieldWithPath("[].memberName").type(STRING).description("memberName"),
                         fieldWithPath("[].couponType").type(STRING).description("couponType")
+                )
+        ));
+    }
+
+    @DisplayName("쿠폰을 통해 예약 상태를 조회한다.")
+    @Test
+    void findReservationByCouponId() throws Exception {
+        given(jwtTokenProvider.getPayload(anyString()))
+                .willReturn("1");
+
+        given(reservationQueryService.getByCouponId(anyLong(), anyLong()))
+                .willReturn(ReservationInformationResponse.of(1L, LocalDateTime.now().plusDays(1L)));
+
+        ResultActions resultActions = mockMvc.perform(get("/api/coupons/1/reservations")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer accessToken")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        resultActions.andDo(document("reservations/get-reservation-by-coupon",
+                getResponsePreprocessor(),
+                responseFields(
+                        fieldWithPath("id").type(NUMBER).description("reservationId"),
+                        fieldWithPath("meetingTime").type(STRING).description("meetingTime")
                 )
         ));
     }

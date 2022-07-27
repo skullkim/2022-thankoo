@@ -55,7 +55,7 @@ public class ReservationQueryService {
                 .collect(Collectors.toList());
     }
 
-    public ReservationInformationResponse findByCouponId(final Long memberId, final Long couponId) {
+    public ReservationInformationResponse getByCouponId(final Long memberId, final Long couponId) {
         Reservation reservation = reservationRepository.findTopByCoupon_IdAndReservationStatus(
                         couponId, ReservationStatus.WAITING)
                 .orElseThrow(() -> new InvalidReservationException(ErrorType.NOT_FOUND_RESERVATION));

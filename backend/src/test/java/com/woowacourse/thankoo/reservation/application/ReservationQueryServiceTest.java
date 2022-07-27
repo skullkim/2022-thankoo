@@ -125,11 +125,11 @@ class ReservationQueryServiceTest {
 
     @DisplayName("쿠폰으로 예약을 조회할 때 ")
     @Nested
-    class FindReservationByCouponTest {
+    class GetReservationByCouponTest {
 
         @DisplayName("권한이 없으면 예외가 발생한다.")
         @Test
-        void unauthorizedFindByCouponId() {
+        void unauthorizedGetByCouponId() {
             Member sender = memberRepository.save(new Member(LALA_NAME, LALA_EMAIL, LALA_SOCIAL_ID, IMAGE_URL));
             Member receiver = memberRepository.save(new Member(SKRR_NAME, SKRR_EMAIL, SKRR_SOCIAL_ID, IMAGE_URL));
             Member other = memberRepository.save(new Member(HUNI_NAME, HUNI_EMAIL, HUNI_SOCIAL_ID, IMAGE_URL));
@@ -138,14 +138,14 @@ class ReservationQueryServiceTest {
                     new Coupon(sender.getId(), receiver.getId(), new CouponContent(COFFEE, TITLE, MESSAGE), NOT_USED));
             reservationRepository.save(ReservationFixture.createReservation(1L, receiver, coupon));
 
-            assertThatThrownBy(() -> reservationQueryService.findByCouponId(other.getId(), coupon.getId()))
+            assertThatThrownBy(() -> reservationQueryService.getByCouponId(other.getId(), coupon.getId()))
                     .isInstanceOf(ForbiddenException.class)
                     .hasMessage("권한이 없습니다.");
         }
 
         @DisplayName("권한이 있으면 조회에 성공한다.")
         @Test
-        void findByCouponId() {
+        void getByCouponId() {
             Member sender = memberRepository.save(new Member(LALA_NAME, LALA_EMAIL, LALA_SOCIAL_ID, IMAGE_URL));
             Member receiver = memberRepository.save(new Member(SKRR_NAME, SKRR_EMAIL, SKRR_SOCIAL_ID, IMAGE_URL));
 
@@ -155,7 +155,7 @@ class ReservationQueryServiceTest {
                     ReservationFixture.createReservation(1L, receiver, coupon));
 
             assertThat(
-                    reservationQueryService.findByCouponId(receiver.getId(), coupon.getId())).usingRecursiveComparison()
+                    reservationQueryService.getByCouponId(receiver.getId(), coupon.getId())).usingRecursiveComparison()
                     .ignoringFields("memberName", "couponType")
                     .isEqualTo(ReservationInformationResponse.from(reservation));
         }

@@ -11,6 +11,10 @@ operation::reservations/get-received-reservations/[snippets='http-request,http-r
 
 operation::reservations/get-sent-reservations/[snippets='http-request,http-response']
 
+== 쿠폰으로 단건 예약 조회
+
+operation::reservations/get-reservation-by-coupon/[snippets='http-request,http-response']
+
 == 예약 승인
 
 operation::reservations/update-reservation-status[snippets='http-request,http-response']
